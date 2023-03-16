@@ -1,0 +1,213 @@
+---
+title: "Nonlinear Optimization Ex.1"
+author: "Ariel Vishne 204149371"
+date: "22 3 2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+```
+
+## Ex. 1
+As seen in class (week #2), we require solving the equation:
+$$
+    x - 2sin(x) = 0
+$$
+We saw that the segment $[\frac{\pi}{2}, 2]$ has some positive root. We will find it with bisection and Newton methods.
+
+### Ex. 1-i BISECTION
+```{r ex1-bisection}
+
+f <- function(x){
+  return(x - 2*sin(x))
+}
+precision <- 10^-6
+
+
+a <- (pi / 2)
+b <- 2
+i <- 0
+x <- ((a+b)/2)
+
+while(abs(a-b) > precision){
+  i <- i+1
+  print(paste("iteration number", i, "current segment [", a,",", b, "]", "Current precision", round(abs(a-b),7)))
+  if(f(x)*f(a)<0){
+    b <- x
+  }
+  else if(f(x)*f(b) <0){
+    a <- x
+  }
+  x <- ((a+b)/2)
+}
+
+```
+### Ex. 1-ii NEWTON
+```{r ex1-newton}
+x <- 2
+i <- 0
+
+while(f(x) > precision){
+  i <- i+1
+  print(paste("iteration number", i, "precision reached:", round(abs(f(x)),7), "value reached:", round(x,7)))
+
+
+  x <- x - ((x-2*sin(x))/(1-2*cos(x)))
+}
+
+```
+### Ex. 1-iii Comparison
+We can see that the Newton method converges sqared, while bisection converges linear.
+
+## Ex. 2
+The desired quantity $\frac{1}{\sqrt2}$ is a solution (a root) to the equation
+$$
+    (\sqrt2x - 1)^2 = 0
+$$
+This equation has no division. We therefore will use the Newton method beginning at ${X_0 = 1/2}$.
+
+If we take the derivative we have:
+
+$$
+((\sqrt2x - 1)^2)'=2\sqrt2(\sqrt2x-1)=4x-2\sqrt2
+$$
+If we solve the recursive equation and we multiply by $2\sqrt2$ we reach:
+$$
+X_{n+1} = X_{n} - \frac{2\sqrt2f(x)}{f'(x)}=X_n- \frac{2\sqrt2((\sqrt2x-1)^2)}{2\sqrt2(\sqrt2x-1)}=X_{n}-[\sqrt2x-1]=X_{n}-\sqrt2x+1
+$$
+Thus we have reached an equation for which $\frac{1}{\sqrt2}$ is a root, and which has no division.
+Beginning at $x_0=0.5$ we get:
+
+```{r ex-2}
+f <- function(x){
+  return((sqrt(2)*x - 1)^2)
+}
+precision <- 10^-6
+x <- 1/2
+i <- 0
+
+while(abs(f(x)) > precision){
+  i <- i+1
+  print(paste("iteration number", i, "precision reached:", round(abs(f(x)),7), "value reached:", round(x,7)))
+
+
+  x <- (x - (sqrt(2)*x) + 1)
+}
+
+```
+We therefore conclude that the value $0.7071078$ is an approximation of $\frac{1}{\sqrt2}$ by six significant digits.
+
+## Ex. 3
+
+We have
+$$
+    f(x) = e^x - x - 1
+$$
+if we look at the derivative we have
+$$
+f'(x) = (e^x - x - 1)' = e^x - 1
+$$
+
+Since $e^x-1$ has only one root where $e^{x} - 1 =0\Rightarrow e^{x}=1\Rightarrow x = 0$ we only have one maxima/minima point. Since $f''(x) = e^{x} > 0$ for all $x$ then it is a minimum point. We conclude that $x = 0$ is the only root.
+
+### Ex. 3-i Newton
+To compare the methods we will begin at $X_0 = 0.125$ and assume precision required of $10^{-4}$
+For the regular Newton method we calculate:
+$$
+    X_{n+1} = X_{n} - \frac{f(X_n)}{f'(X_n)} = X_n -\frac{e^{X_n} - X_n - 1}{e^{X_n}} = X_n - 1 + \frac{X_n + 1}{e^{X_n}}
+$$
+
+
+```{r ex3-newton}
+
+f <- function(x){
+  return((exp(1)^x) - x - 1)
+}
+precision <- 10^-4
+x <- 1/8
+i <- 0
+
+while(abs(f(x)) > precision){
+  i <- i+1
+  print(paste("iteration number", i, "precision reached:", round(abs(f(x)),7), "value reached:", round(x,7)))
+
+  x <- (x - 1) + ((x+1) / (exp(1)^x))
+}
+
+
+```
+We required 127 iterations to get to the required precision.
+
+### Ex 3-ii
+If however we multiply the numerator by 2 we obtain:
+$$
+    X_{n+1} = X_{n} - \frac{2f(X_n)}{f'(X_n)} = X_n -\frac{2e^{X_n} - 2X_n - 2}{e^{X_n}} = X_n - 2 + \frac{2X_n + 2}{e^{X_n}}
+$$
+
+```{r ex3-newton-modified}
+
+f <- function(x){
+  return((exp(1)^x) - x - 1)
+}
+precision <- 10^-4
+x <- 1/8
+i <- 0
+
+while(abs(f(x)) > precision){
+  i <- i+1
+  print(paste("iteration number", i, "precision reached:", round(abs(f(x)),7), "value reached:", round(x,7)))
+
+  x <- (x - 2) + (((2*x)+2) / (exp(1)^x))
+}
+
+
+```
+We require only 63 iterations, exactly half of those required in the previous method
+
+### Ex. 3-iii
+The reason that the second method works better is because $f(x)$ has the first derivative also obtaining the value of 0 at point 0 ($f'(0)=0$), it is better to multiply by the order of the first derivative that does not recieve the value of 0. Because $f''(0)=e^0=1\ne0$ then multiplying the numerator by 2 will achieve faster convergence.
+
+## Ex. 4
+We have
+$$
+f(x) = arctan(x) \Rightarrow f'(x) = \frac{1}{1+x^2}
+$$
+Therefore using the Newton method we obtain:
+$$
+X_{n+1} = X_n - \frac{f(X_n)}{f'(X_n)}= X_n - \frac{arctan(X_n)}{\frac{1}{1+X_n^2}} = X_n- (1+X_n^2)arctan(X_n) 
+$$
+For convergence to 0 we require $|X_{n+1}|<|X_{n}|$ and thus we require that
+$$
+X_n- (1+X_n^2)arctan(X_n) > -X_n\Longrightarrow (1+X_n^2)arctan(X_n) > 2X_n \Longrightarrow |arctan(X_n)| > |\frac{2X_n}{1+X_n^2}|
+$$
+We can thus see that for the domain of
+$$
+-1.39<X_n<1.39
+$$
+Where $X\ne0$ there will be a convergence. For example, we check for $x=1.35$ and obtain the following results:
+```{r ex4}
+f <- function(x){
+  return(atan(x))
+}
+precision <- 10^-6
+x <- 1.35
+i <- 0
+
+while(abs(f(x)) > precision){
+  i <- i+1
+  print(paste("iteration number", i, "precision reached:", round(abs(f(x)),7), "value reached:", round(x,7)))
+  
+
+  x <- x - ((x^2)*f(x)) - f(x)
+}
+
+t <- seq(-5,5,0.01)
+plot(t, abs(atan(t)), col = "red", xlab = "", ylab = "")
+points(t, abs(((2*t)/(1+(t^2)))), col = "blue")
+abline(v = c(-1.39,1.39), col = c("green", "green"))
+legend("topleft", c("|atan|", "|2x/1+x^2|", "convergence zone"), fill = c("red", "blue", "green"))
+```

@@ -1,0 +1,234 @@
+---
+title: "Nonlinear Optimization Ex.3"
+author: "Ariel Vishne 204149371"
+date: "30 05 2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+library(tidyverse)
+library(tidyr)
+library(lemon)
+knit_print.data.frame <- lemon_print
+```
+
+## Ex. 1
+
+Our function $Y_{k}$ is defined by:
+
+$$
+Y_{k} = \max(0, 10 -  (1+0.007\sum_{i=1}^{k}\xi_i) \cdot s) = max(0, 10 - s - 0.007\sum_{i=1}^{k}\xi_{i} \cdot s)
+$$
+
+For $0\leq k\leq10000$ and $\xi_{1},...,\xi_{10000}$ takes probability $\pm1$ with equal probability $0.5$ where $Y_{0}$ is defined by:
+
+$$
+Y_{0} = \max(0,10-s)
+$$
+
+We would like to find the optimal stopping value
+
+$$
+V(s)=max_{\tau}(\mathbb{E}(Y_{\tau}))
+$$
+
+We define recursively from end to start (for $n=10000$):
+
+$$
+V_{n}=Y_{n}=\max(0, 10 -  s - 0.007\sum_{i=1}^{n}\xi_i \cdot s)
+$$
+
+For general k we have:
+$$
+V_{k}= \max(Y_{k}, \mathbb{E}[V_{k+1}|\xi_{1}, ..., \xi_{k}])
+    =max(0, 10 - s - 0.007\sum_{i=1}^{k}\xi_{i} \cdot s,  \mathbb{E}[V_{k+1}| \xi_{1}, ..., \xi_{k}])
+$$
+
+We use backward recursion starting with $V_{n}$ to calculate the values of all $V_{k}$. This ostensibly requires $2^n=2^{10000}$ different values at all leaves of the tree, but we notice that the values for some number of iterations $k$ is actually bounded between $[-k,k]$ where more specifically the values for a given $k$ are $[-k, -k +2, ..., k - 2, k]$ for a total of $2k+1$ values possible.
+We can thus create a matrix going backward in which the rows will represent possible events of $\sum_{i=1}^{k}\xi_{i}$ and the columns will represent $k$ (the current time in the series). Starting with filling values at the last columns, we will propagate the values towards the start by averaging on the adjacent values in the columns to the right using the following function:
+```{r dynamic.table}
+dynamic.table <- function(n, Y0, s){
+  d <- matrix(-1, nrow = ((2*n) +1), ncol = (n+1))
+  final.vals.indices <- seq(1, ((2*n) + 1), 2)
+  events <- seq(-n,n)
+  for (i in final.vals.indices){
+    d[i,n+1] <- max(0, Y0 - (0.007 * events[i] * s))
+  }
+  for (i in n:1){
+    if (i %% 500 == 0)
+    {print(paste("reached iteration number", i))}
+    vals.layer.i <- seq(n - i + 2, n + i, 2)
+    for(j in vals.layer.i){
+      d[j,i] <- mean(c(
+        d[j-1,i+1],
+        d[j+1,i+1]
+      ))
+    }
+  }
+  return(d)
+}
+
+```
+
+For example, for $k=3, s=9.9$ we will have the following values:
+```{r tree.example, warning=FALSE}
+k = 3
+s <- 9.9
+d <- dynamic.table(k, 10 - s, s)
+d <- round(d, 4)
+events <- seq(-k,k)
+d[d==-1] <- ""
+k.cols <- paste("k", seq(0,k), sep = "")
+d <- as_tibble(cbind(events, d))
+colnames(d) <- c("events", k.cols)
+print(d)
+```
+We note that the size of the matrix we create is therefore of size $2n+1 \times n+1$ (we include $k_{0}$), while the number of cells that are actually filled is actually $\frac{n(n+1)}{2}$ since we only fill $k+1$ possible values per time period $k$.
+We could have chosen a somewhat better representation creating a matrix of size $k\times k+1$ where the columns still represented the times periods but the rows represented the number of positive $\xi_{i}$ so far up to the point $k$. This would have meant that for some cell $[i,j]$ we would take the sum to be of $i-1$ positive $\xi_{i}$'s and of $j-i$ negative $\xi_{i}$'s, thus representing the event that after $k$ steps the total sum is $i-1-j+i=2i-j-1$. In total this alternative representation would result in an upper triangular matrix where the diagonal represents events in which all $\xi_{i}$'s are positive and the lower triangle represents events that are impossible and will be assigned some default value (like we did in our representation).
+This alternative representation will be somewhat more compact but will not change the number of cells we actually have to go over during the forward process (i.e. it would somewhat improve memory usage but not computational time). For visualization and simplicity our representation is still valid and we will continue with it for clarity (given a much larger $n$ this might be of slight significance)
+
+
+
+Next, we create the following helper functions to help us calculate $Y_{k}$ and $V_{k}$:
+```{r helper functions}
+yk <- function(s, k, xi, inital.value = 10, with.max = TRUE){
+  a <- 0
+  if(k != 0){
+   coef <- 1 + ((0.007) * sum(xi[1:(k+1)]))
+  }
+  else{
+   coef <- 1 
+  }
+  b <- inital.value - (coef * s)
+  if (with.max == TRUE){
+    return(max(a,b))
+  }
+  else{
+    return(b)
+  }
+}
+
+compute.yk <- function(s, n, xi, initial.value, with.max = TRUE){
+  yk.array <- rep(0,n+1)
+  yk.array[1] <- yk(s=s, k=0, xi=xi, inital.value = initial.value, with.max = with.max)
+  for (i in 1:n){
+    yk.array[i+1] <- yk(s = s, k = i, xi = xi, inital.value = initial.value, with.max = with.max)
+  }
+  return(yk.array)
+}
+
+compute.vk <- function(n, s, xi, initial.value = 10){
+  
+  d <- dynamic.table(n, initial.value - s, s)
+  events <- seq(-n,n)
+  
+  coefs <- cumsum(xi)
+  vk.array <- rep(0,n+1)
+  for (i in 1:(n+1)){
+    vk.array[i] <- d[which(events == coefs[i]),i]
+  }
+  return(vk.array)
+}
+
+
+```
+
+Having built a dynamic table which relies on our value $s$ and the total number of iterations $n$, and with the helper functions provided, we can look at some sequence $Y_{1}, ..., Y_{n}$ and figure out the corresponding $V_{1},...,V_{n}$. We will then conclude by:
+
+$$
+\tau^{*} = min_{k}:Y_{k}=V_{k}
+$$
+
+We finally create the required function:
+```{r max1}
+
+
+vmax1 <- function(s, n = 10000, initial = 10, print.plot = TRUE, print.data = FALSE){
+  k <- seq(0,n)
+  xi <- sample(x = c(-1,1), size = n, replace = TRUE)
+  xi <- c(0, xi)
+  sum.xi <- cumsum(xi)
+  yk.array <- compute.yk(s,n,xi, initial.value = initial)
+  vk.array <- compute.vk(n, s, xi, initial.value = initial)
+  data <- as.tibble(cbind(k,yk.array, vk.array, xi, sum.xi))
+  if (
+    sum(
+      round(vk.array, 4) == round(yk.array,4)
+      ) > 0
+    ){
+    tau <- which(round(data$yk.array, 4) == round(data$vk.array, 4))[[1]] - 1  
+  }
+  else{
+    tau <- n
+  }
+  plot.title <- paste("Vk vs. Yk for s =",s)
+  pl <- ggplot(data = data, mapping = aes(x = k)) +
+    geom_point(mapping = aes(y = yk.array, color = "yk"),shape = 17) +
+    geom_point(mapping = aes(y = vk.array, color = "vk")) +
+    geom_vline(mapping = aes(color = "stopping time", xintercept = tau), linetype = "dashed") +
+    xlab("K") + ylab("value") + ggtitle(plot.title)
+    
+  if (print.plot == TRUE){
+    print(pl)
+  }
+  if (print.data == TRUE){
+  print(data)
+  }
+  return(tau)
+}
+
+```
+We emphasize that the essence of the function is that of creating the dynamic table, which is itself the purpose of the exercise. We randomize $\xi_{i}$ for the sake of visualization only.
+
+
+We initialize for the following results
+```{r max1.res, warning= FALSE}
+set.seed(1)
+tau1 <- vmax1(s = 9.9)
+print(paste("optimal stopping for s = 9.9 is", tau1))
+
+tau2 <- vmax1(s = 9)
+print(paste("optimal stopping for s = 9.9 is", tau2))
+
+tau2 <- vmax1(s = 5)
+print(paste("optimal stopping for s = 5 is", tau2))
+
+```
+We can see that as $s$ is smaller, which means that the inital value of the asset is larger, then the stopping time tends to be earlier. We note that the stopping time is the earliest value $k$ at which all future leaves of branches will have a non-zero value. This is because the probability is $0.5$ for $1$ and $-1$ and therefore if all future values are non-zero then the average will be same for $V_{k}$ and $Y_{k}$.
+
+## Ex. 2
+Having our dynamic.table enables us to quickly also compute what values it is necessary to stop at that moment $k$ by comparing the possible $V_{k}$ values we computed with the possible $Y_{k}$ outcomes.
+```{r max2}
+vmax2 <- function(k, s, n = 10000, initial = 10){
+  d <- dynamic.table(n, initial - s, s)
+  our.k <- k + 1
+  vals.layer.k <- seq(n - our.k + 2, n + our.k, 2)
+  events <- seq(-n,n)
+  sums.to.stop <- c()
+  events.to.stop <- rep(-1, 2 * n +1)
+  for (val.index in vals.layer.k){
+  if (
+    round(d[val.index,our.k],4) ==
+    round((initial - s) - (0.007 * events[val.index] * s),4)
+    )
+    {
+    events.to.stop[val.index] = 1
+    sums.to.stop <- c(sums.to.stop, events[val.index])
+    }
+  }
+values.to.stop <- d[,our.k][events.to.stop == 1]
+return(sums.to.stop)
+}
+```
+
+```{r max2.res}
+
+k.stop.values <- vmax2(k = 3000, s = 9.9, n = 10000)
+print("For k = 3000 and s = 9.9 the sums of xi_s to this point for which this is an optimal stopping time are:")
+print(k.stop.values)
+
+```

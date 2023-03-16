@@ -1,0 +1,572 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\title{nonlinear\_optimization\_ex1}
+\author{ariel vishne 204149371}
+\date{15 3 2022}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={nonlinear\_optimization\_ex1},
+  pdfauthor={ariel vishne 204149371},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\begin{document}
+\maketitle
+
+\hypertarget{ex.-1}{%
+\subsection{Ex. 1}\label{ex.-1}}
+
+As seen in class (week \#2), we require solving the equation: \[
+    x - 2sin(x) = 0
+\] We saw that the segment \([\frac{\pi}{2}, 2]\) has some positive
+root. We will find it with bisection and Newton methods.
+
+\hypertarget{ex.-1-i-bisection}{%
+\subsubsection{Ex. 1-i BISECTION}\label{ex.-1-i-bisection}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+  \FunctionTok{return}\NormalTok{(x }\SpecialCharTok{{-}} \DecValTok{2}\SpecialCharTok{*}\FunctionTok{sin}\NormalTok{(x))}
+\NormalTok{\}}
+\NormalTok{precision }\OtherTok{\textless{}{-}} \DecValTok{10}\SpecialCharTok{\^{}{-}}\DecValTok{6}
+
+
+\NormalTok{a }\OtherTok{\textless{}{-}}\NormalTok{ (pi }\SpecialCharTok{/} \DecValTok{2}\NormalTok{)}
+\NormalTok{b }\OtherTok{\textless{}{-}} \DecValTok{2}
+\NormalTok{i }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ ((a}\SpecialCharTok{+}\NormalTok{b)}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}
+
+\ControlFlowTok{while}\NormalTok{(}\FunctionTok{abs}\NormalTok{(a}\SpecialCharTok{{-}}\NormalTok{b) }\SpecialCharTok{\textgreater{}}\NormalTok{ precision)\{}
+\NormalTok{  i }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{+}\DecValTok{1}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"iteration number"}\NormalTok{, i, }\StringTok{"current segment ["}\NormalTok{, a,}\StringTok{","}\NormalTok{, b, }\StringTok{"]"}\NormalTok{, }\StringTok{"Current precision"}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(a}\SpecialCharTok{{-}}\NormalTok{b),}\DecValTok{7}\NormalTok{)))}
+  \ControlFlowTok{if}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)}\SpecialCharTok{*}\FunctionTok{f}\NormalTok{(a)}\SpecialCharTok{\textless{}}\DecValTok{0}\NormalTok{)\{}
+\NormalTok{    b }\OtherTok{\textless{}{-}}\NormalTok{ x}
+\NormalTok{  \}}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)}\SpecialCharTok{*}\FunctionTok{f}\NormalTok{(b) }\SpecialCharTok{\textless{}}\DecValTok{0}\NormalTok{)\{}
+\NormalTok{    a }\OtherTok{\textless{}{-}}\NormalTok{ x}
+\NormalTok{  \}}
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ ((a}\SpecialCharTok{+}\NormalTok{b)}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "iteration number 1 current segment [ 1.5707963267949 , 2 ] Current precision 0.4292037"
+## [1] "iteration number 2 current segment [ 1.78539816339745 , 2 ] Current precision 0.2146018"
+## [1] "iteration number 3 current segment [ 1.89269908169872 , 2 ] Current precision 0.1073009"
+## [1] "iteration number 4 current segment [ 1.89269908169872 , 1.94634954084936 ] Current precision 0.0536505"
+## [1] "iteration number 5 current segment [ 1.89269908169872 , 1.91952431127404 ] Current precision 0.0268252"
+## [1] "iteration number 6 current segment [ 1.89269908169872 , 1.90611169648638 ] Current precision 0.0134126"
+## [1] "iteration number 7 current segment [ 1.89269908169872 , 1.89940538909255 ] Current precision 0.0067063"
+## [1] "iteration number 8 current segment [ 1.89269908169872 , 1.89605223539564 ] Current precision 0.0033532"
+## [1] "iteration number 9 current segment [ 1.89437565854718 , 1.89605223539564 ] Current precision 0.0016766"
+## [1] "iteration number 10 current segment [ 1.89521394697141 , 1.89605223539564 ] Current precision 0.0008383"
+## [1] "iteration number 11 current segment [ 1.89521394697141 , 1.89563309118352 ] Current precision 0.0004191"
+## [1] "iteration number 12 current segment [ 1.89542351907747 , 1.89563309118352 ] Current precision 0.0002096"
+## [1] "iteration number 13 current segment [ 1.89542351907747 , 1.8955283051305 ] Current precision 0.0001048"
+## [1] "iteration number 14 current segment [ 1.89547591210398 , 1.8955283051305 ] Current precision 5.24e-05"
+## [1] "iteration number 15 current segment [ 1.89547591210398 , 1.89550210861724 ] Current precision 2.62e-05"
+## [1] "iteration number 16 current segment [ 1.89548901036061 , 1.89550210861724 ] Current precision 1.31e-05"
+## [1] "iteration number 17 current segment [ 1.89548901036061 , 1.89549555948892 ] Current precision 6.5e-06"
+## [1] "iteration number 18 current segment [ 1.89549228492477 , 1.89549555948892 ] Current precision 3.3e-06"
+## [1] "iteration number 19 current segment [ 1.89549392220685 , 1.89549555948892 ] Current precision 1.6e-06"
+\end{verbatim}
+
+\hypertarget{ex.-1-ii-newton}{%
+\subsubsection{Ex. 1-ii NEWTON}\label{ex.-1-ii-newton}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{2}
+\NormalTok{i }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\ControlFlowTok{while}\NormalTok{(}\FunctionTok{f}\NormalTok{(x) }\SpecialCharTok{\textgreater{}}\NormalTok{ precision)\{}
+\NormalTok{  i }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{+}\DecValTok{1}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"iteration number"}\NormalTok{, i, }\StringTok{"precision reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)),}\DecValTok{7}\NormalTok{), }\StringTok{"value reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(x,}\DecValTok{7}\NormalTok{)))}
+
+
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ x }\SpecialCharTok{{-}}\NormalTok{ ((x}\DecValTok{{-}2}\SpecialCharTok{*}\FunctionTok{sin}\NormalTok{(x))}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1{-}2}\SpecialCharTok{*}\FunctionTok{cos}\NormalTok{(x)))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "iteration number 1 precision reached: 0.1814051 value reached: 2"
+## [1] "iteration number 2 precision reached: 0.0090401 value reached: 1.9009956"
+## [1] "iteration number 3 precision reached: 2.85e-05 value reached: 1.8955116"
+\end{verbatim}
+
+\hypertarget{ex.-1-iii-comparison}{%
+\subsubsection{Ex. 1-iii Comparison}\label{ex.-1-iii-comparison}}
+
+We can see that the Newton method converges sqared, while bisection
+converges linear.
+
+\hypertarget{ex.-2}{%
+\subsection{Ex. 2}\label{ex.-2}}
+
+The desired quantity \(\frac{1}{\sqrt2}\) is a solution (a root) to the
+equation \[
+    x^2 - \frac{1}{2} = 0
+\] We therefore will use the Newton method beginning at \{X\_0 = 1/2\}.
+If we solve the recursive equation we reach: \[
+X_{n+1} = \frac{Xn}{2} + \frac{1}{4Xn}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+  \FunctionTok{return}\NormalTok{(x}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{{-}} \DecValTok{1}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{precision }\OtherTok{\textless{}{-}} \DecValTok{10}\SpecialCharTok{\^{}{-}}\DecValTok{6}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{/}\DecValTok{2}
+\NormalTok{i }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\ControlFlowTok{while}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)) }\SpecialCharTok{\textgreater{}}\NormalTok{ precision)\{}
+\NormalTok{  i }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{+}\DecValTok{1}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"iteration number"}\NormalTok{, i, }\StringTok{"precision reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)),}\DecValTok{7}\NormalTok{), }\StringTok{"value reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(x,}\DecValTok{7}\NormalTok{)))}
+
+
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ (x }\SpecialCharTok{/} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{/}\NormalTok{ (}\DecValTok{4}\SpecialCharTok{*}\NormalTok{x))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "iteration number 1 precision reached: 0.25 value reached: 0.5"
+## [1] "iteration number 2 precision reached: 0.0625 value reached: 0.75"
+## [1] "iteration number 3 precision reached: 0.0017361 value reached: 0.7083333"
+## [1] "iteration number 4 precision reached: 1.5e-06 value reached: 0.7071078"
+\end{verbatim}
+
+We therefore conclude that the value \(0.7071078\) is an approximation
+of \(\frac{1}{\sqrt2}\) by six significant digits.
+
+\hypertarget{ex.-3}{%
+\subsection{Ex. 3}\label{ex.-3}}
+
+We have \[
+    f(x) = e^x - x - 1
+\] if we look at the derivative we have \[
+f'(x) = (e^x - x - 1)' = e^x - 1
+\]
+
+Since \(e^x-1\) has only one root where
+\(e^{x} - 1 =0\Rightarrow e^{x}=1\Rightarrow x = 0\) we only have one
+maxima/minima point. Since \(f''(x) = e^{x} > 0\) for all \(x\) then it
+is a minimum point. We conclude that \(x = 0\) is the only root. \#\#\#
+Ex. 3-i Newton To compare the methods we will begin at \(X_0 = 0.125\)
+and assume precision required of \(10^{-4}\) For the regular Newton
+method we calculate: \[
+    X_{n+1} = X_{n} - \frac{f(X_n)}{f'(X_n)} = X_n -\frac{e^{X_n} - X_n - 1}{e^{X_n}} = X_n - 1 + \frac{X_n + 1}{e^{X_n}}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+  \FunctionTok{return}\NormalTok{((}\FunctionTok{exp}\NormalTok{(}\DecValTok{1}\NormalTok{)}\SpecialCharTok{\^{}}\NormalTok{x) }\SpecialCharTok{{-}}\NormalTok{ x }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{precision }\OtherTok{\textless{}{-}} \DecValTok{10}\SpecialCharTok{\^{}{-}}\DecValTok{4}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{/}\DecValTok{8}
+\NormalTok{i }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\ControlFlowTok{while}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)) }\SpecialCharTok{\textgreater{}}\NormalTok{ precision)\{}
+\NormalTok{  i }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{+}\DecValTok{1}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"iteration number"}\NormalTok{, i, }\StringTok{"precision reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)),}\DecValTok{7}\NormalTok{), }\StringTok{"value reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(x,}\DecValTok{7}\NormalTok{)))}
+
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ (x }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ ((x}\SpecialCharTok{+}\DecValTok{1}\NormalTok{) }\SpecialCharTok{/}\NormalTok{ (}\FunctionTok{exp}\NormalTok{(}\DecValTok{1}\NormalTok{)}\SpecialCharTok{\^{}}\NormalTok{x))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "iteration number 1 precision reached: 0.0081485 value reached: 0.125"
+## [1] "iteration number 2 precision reached: 0.0072202 value reached: 0.117809"
+## [1] "iteration number 3 precision reached: 0.0064409 value reached: 0.1113912"
+## [1] "iteration number 4 precision reached: 0.0057805 value reached: 0.1056292"
+## [1] "iteration number 5 precision reached: 0.0052161 value reached: 0.1004282"
+## [1] "iteration number 6 precision reached: 0.0047299 value reached: 0.0957105"
+## [1] "iteration number 7 precision reached: 0.0043084 value reached: 0.0914123"
+## [1] "iteration number 8 precision reached: 0.0039405 value reached: 0.0874803"
+## [1] "iteration number 9 precision reached: 0.0036175 value reached: 0.0838699"
+## [1] "iteration number 10 precision reached: 0.0033325 value reached: 0.0805434"
+## [1] "iteration number 11 precision reached: 0.0030797 value reached: 0.0774688"
+## [1] "iteration number 12 precision reached: 0.0028545 value reached: 0.0746187"
+## [1] "iteration number 13 precision reached: 0.0026531 value reached: 0.0719694"
+## [1] "iteration number 14 precision reached: 0.0024721 value reached: 0.0695006"
+## [1] "iteration number 15 precision reached: 0.002309 value reached: 0.0671944"
+## [1] "iteration number 16 precision reached: 0.0021614 value reached: 0.0650355"
+## [1] "iteration number 17 precision reached: 0.0020275 value reached: 0.0630102"
+## [1] "iteration number 18 precision reached: 0.0019056 value reached: 0.0611065"
+## [1] "iteration number 19 precision reached: 0.0017944 value reached: 0.0593139"
+## [1] "iteration number 20 precision reached: 0.0016925 value reached: 0.0576228"
+## [1] "iteration number 21 precision reached: 0.0015991 value reached: 0.056025"
+## [1] "iteration number 22 precision reached: 0.0015132 value reached: 0.054513"
+## [1] "iteration number 23 precision reached: 0.001434 value reached: 0.0530801"
+## [1] "iteration number 24 precision reached: 0.0013609 value reached: 0.0517202"
+## [1] "iteration number 25 precision reached: 0.0012931 value reached: 0.050428"
+## [1] "iteration number 26 precision reached: 0.0012303 value reached: 0.0491984"
+## [1] "iteration number 27 precision reached: 0.001172 value reached: 0.0480272"
+## [1] "iteration number 28 precision reached: 0.0011177 value reached: 0.0469101"
+## [1] "iteration number 29 precision reached: 0.0010671 value reached: 0.0458437"
+## [1] "iteration number 30 precision reached: 0.0010198 value reached: 0.0448244"
+## [1] "iteration number 31 precision reached: 0.0009756 value reached: 0.0438493"
+## [1] "iteration number 32 precision reached: 0.0009342 value reached: 0.0429156"
+## [1] "iteration number 33 precision reached: 0.0008954 value reached: 0.0420206"
+## [1] "iteration number 34 precision reached: 0.0008589 value reached: 0.0411621"
+## [1] "iteration number 35 precision reached: 0.0008246 value reached: 0.0403379"
+## [1] "iteration number 36 precision reached: 0.0007923 value reached: 0.0395458"
+## [1] "iteration number 37 precision reached: 0.0007619 value reached: 0.0387842"
+## [1] "iteration number 38 precision reached: 0.0007332 value reached: 0.0380513"
+## [1] "iteration number 39 precision reached: 0.0007061 value reached: 0.0373454"
+## [1] "iteration number 40 precision reached: 0.0006805 value reached: 0.0366652"
+## [1] "iteration number 41 precision reached: 0.0006562 value reached: 0.0360092"
+## [1] "iteration number 42 precision reached: 0.0006332 value reached: 0.0353763"
+## [1] "iteration number 43 precision reached: 0.0006114 value reached: 0.0347651"
+## [1] "iteration number 44 precision reached: 0.0005907 value reached: 0.0341746"
+## [1] "iteration number 45 precision reached: 0.000571 value reached: 0.0336038"
+## [1] "iteration number 46 precision reached: 0.0005523 value reached: 0.0330517"
+## [1] "iteration number 47 precision reached: 0.0005345 value reached: 0.0325174"
+## [1] "iteration number 48 precision reached: 0.0005175 value reached: 0.032"
+## [1] "iteration number 49 precision reached: 0.0005013 value reached: 0.0314988"
+## [1] "iteration number 50 precision reached: 0.0004859 value reached: 0.031013"
+## [1] "iteration number 51 precision reached: 0.0004712 value reached: 0.0305419"
+## [1] "iteration number 52 precision reached: 0.0004571 value reached: 0.0300849"
+## [1] "iteration number 53 precision reached: 0.0004437 value reached: 0.0296413"
+## [1] "iteration number 54 precision reached: 0.0004308 value reached: 0.0292106"
+## [1] "iteration number 55 precision reached: 0.0004185 value reached: 0.0287922"
+## [1] "iteration number 56 precision reached: 0.0004067 value reached: 0.0283856"
+## [1] "iteration number 57 precision reached: 0.0003954 value reached: 0.0279902"
+## [1] "iteration number 58 precision reached: 0.0003846 value reached: 0.0276058"
+## [1] "iteration number 59 precision reached: 0.0003742 value reached: 0.0272317"
+## [1] "iteration number 60 precision reached: 0.0003642 value reached: 0.0268675"
+## [1] "iteration number 61 precision reached: 0.0003546 value reached: 0.026513"
+## [1] "iteration number 62 precision reached: 0.0003454 value reached: 0.0261677"
+## [1] "iteration number 63 precision reached: 0.0003365 value reached: 0.0258312"
+## [1] "iteration number 64 precision reached: 0.000328 value reached: 0.0255033"
+## [1] "iteration number 65 precision reached: 0.0003198 value reached: 0.0251836"
+## [1] "iteration number 66 precision reached: 0.0003119 value reached: 0.0248717"
+## [1] "iteration number 67 precision reached: 0.0003043 value reached: 0.0245675"
+## [1] "iteration number 68 precision reached: 0.0002969 value reached: 0.0242706"
+## [1] "iteration number 69 precision reached: 0.0002899 value reached: 0.0239808"
+## [1] "iteration number 70 precision reached: 0.000283 value reached: 0.0236978"
+## [1] "iteration number 71 precision reached: 0.0002764 value reached: 0.0234214"
+## [1] "iteration number 72 precision reached: 0.0002701 value reached: 0.0231514"
+## [1] "iteration number 73 precision reached: 0.0002639 value reached: 0.0228875"
+## [1] "iteration number 74 precision reached: 0.000258 value reached: 0.0226295"
+## [1] "iteration number 75 precision reached: 0.0002523 value reached: 0.0223773"
+## [1] "iteration number 76 precision reached: 0.0002467 value reached: 0.0221307"
+## [1] "iteration number 77 precision reached: 0.0002413 value reached: 0.0218894"
+## [1] "iteration number 78 precision reached: 0.0002361 value reached: 0.0216533"
+## [1] "iteration number 79 precision reached: 0.0002311 value reached: 0.0214222"
+## [1] "iteration number 80 precision reached: 0.0002262 value reached: 0.021196"
+## [1] "iteration number 81 precision reached: 0.0002215 value reached: 0.0209745"
+## [1] "iteration number 82 precision reached: 0.0002169 value reached: 0.0207576"
+## [1] "iteration number 83 precision reached: 0.0002125 value reached: 0.0205451"
+## [1] "iteration number 84 precision reached: 0.0002082 value reached: 0.0203369"
+## [1] "iteration number 85 precision reached: 0.000204 value reached: 0.0201329"
+## [1] "iteration number 86 precision reached: 2e-04 value reached: 0.0199329"
+## [1] "iteration number 87 precision reached: 0.0001961 value reached: 0.0197369"
+## [1] "iteration number 88 precision reached: 0.0001922 value reached: 0.0195447"
+## [1] "iteration number 89 precision reached: 0.0001885 value reached: 0.0193561"
+## [1] "iteration number 90 precision reached: 0.0001849 value reached: 0.0191712"
+## [1] "iteration number 91 precision reached: 0.0001815 value reached: 0.0189898"
+## [1] "iteration number 92 precision reached: 0.0001781 value reached: 0.0188117"
+## [1] "iteration number 93 precision reached: 0.0001748 value reached: 0.018637"
+## [1] "iteration number 94 precision reached: 0.0001715 value reached: 0.0184655"
+## [1] "iteration number 95 precision reached: 0.0001684 value reached: 0.0182971"
+## [1] "iteration number 96 precision reached: 0.0001654 value reached: 0.0181317"
+## [1] "iteration number 97 precision reached: 0.0001624 value reached: 0.0179693"
+## [1] "iteration number 98 precision reached: 0.0001595 value reached: 0.0178098"
+## [1] "iteration number 99 precision reached: 0.0001567 value reached: 0.017653"
+## [1] "iteration number 100 precision reached: 0.000154 value reached: 0.0174991"
+## [1] "iteration number 101 precision reached: 0.0001513 value reached: 0.0173477"
+## [1] "iteration number 102 precision reached: 0.0001488 value reached: 0.017199"
+## [1] "iteration number 103 precision reached: 0.0001462 value reached: 0.0170528"
+## [1] "iteration number 104 precision reached: 0.0001438 value reached: 0.016909"
+## [1] "iteration number 105 precision reached: 0.0001414 value reached: 0.0167676"
+## [1] "iteration number 106 precision reached: 0.000139 value reached: 0.0166286"
+## [1] "iteration number 107 precision reached: 0.0001367 value reached: 0.0164919"
+## [1] "iteration number 108 precision reached: 0.0001345 value reached: 0.0163574"
+## [1] "iteration number 109 precision reached: 0.0001323 value reached: 0.0162251"
+## [1] "iteration number 110 precision reached: 0.0001302 value reached: 0.0160949"
+## [1] "iteration number 111 precision reached: 0.0001281 value reached: 0.0159667"
+## [1] "iteration number 112 precision reached: 0.0001261 value reached: 0.0158406"
+## [1] "iteration number 113 precision reached: 0.0001242 value reached: 0.0157164"
+## [1] "iteration number 114 precision reached: 0.0001222 value reached: 0.0155942"
+## [1] "iteration number 115 precision reached: 0.0001203 value reached: 0.0154739"
+## [1] "iteration number 116 precision reached: 0.0001185 value reached: 0.0153554"
+## [1] "iteration number 117 precision reached: 0.0001167 value reached: 0.0152387"
+## [1] "iteration number 118 precision reached: 0.0001149 value reached: 0.0151238"
+## [1] "iteration number 119 precision reached: 0.0001132 value reached: 0.0150106"
+## [1] "iteration number 120 precision reached: 0.0001115 value reached: 0.014899"
+## [1] "iteration number 121 precision reached: 0.0001099 value reached: 0.0147891"
+## [1] "iteration number 122 precision reached: 0.0001083 value reached: 0.0146808"
+## [1] "iteration number 123 precision reached: 0.0001067 value reached: 0.0145741"
+## [1] "iteration number 124 precision reached: 0.0001052 value reached: 0.0144689"
+## [1] "iteration number 125 precision reached: 0.0001037 value reached: 0.0143653"
+## [1] "iteration number 126 precision reached: 0.0001022 value reached: 0.0142631"
+## [1] "iteration number 127 precision reached: 0.0001008 value reached: 0.0141623"
+\end{verbatim}
+
+We required 127 iterations to get to the required precision.
+
+\hypertarget{ex-3-ii}{%
+\subsubsection{Ex 3-ii}\label{ex-3-ii}}
+
+If however we multiply the numerator by 2 we obtain: \[
+    X_{n+1} = X_{n} - \frac{2f(X_n)}{f'(X_n)} = X_n -\frac{2e^{X_n} - 2X_n - 2}{e^{X_n}} = X_n - 2 + \frac{2X_n + 2}{e^{X_n}}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+  \FunctionTok{return}\NormalTok{((}\FunctionTok{exp}\NormalTok{(}\DecValTok{1}\NormalTok{)}\SpecialCharTok{\^{}}\NormalTok{x) }\SpecialCharTok{{-}}\NormalTok{ x }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{precision }\OtherTok{\textless{}{-}} \DecValTok{10}\SpecialCharTok{\^{}{-}}\DecValTok{4}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{/}\DecValTok{8}
+\NormalTok{i }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\ControlFlowTok{while}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)) }\SpecialCharTok{\textgreater{}}\NormalTok{ precision)\{}
+\NormalTok{  i }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{+}\DecValTok{1}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"iteration number"}\NormalTok{, i, }\StringTok{"precision reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)),}\DecValTok{7}\NormalTok{), }\StringTok{"value reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(x,}\DecValTok{7}\NormalTok{)))}
+
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ (x }\SpecialCharTok{{-}} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ (((}\DecValTok{2}\SpecialCharTok{*}\NormalTok{x)}\SpecialCharTok{+}\DecValTok{2}\NormalTok{) }\SpecialCharTok{/}\NormalTok{ (}\FunctionTok{exp}\NormalTok{(}\DecValTok{1}\NormalTok{)}\SpecialCharTok{\^{}}\NormalTok{x))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "iteration number 1 precision reached: 0.0081485 value reached: 0.125"
+## [1] "iteration number 2 precision reached: 0.0063501 value reached: 0.110618"
+## [1] "iteration number 3 precision reached: 0.0050921 value reached: 0.0992477"
+## [1] "iteration number 4 precision reached: 0.0041767 value reached: 0.0900257"
+## [1] "iteration number 5 precision reached: 0.0034893 value reached: 0.0823915"
+## [1] "iteration number 6 precision reached: 0.0029598 value reached: 0.0759647"
+## [1] "iteration number 7 precision reached: 0.002543 value reached: 0.0704782"
+## [1] "iteration number 8 precision reached: 0.0022089 value reached: 0.0657383"
+## [1] "iteration number 9 precision reached: 0.0019369 value reached: 0.0616016"
+## [1] "iteration number 10 precision reached: 0.0017126 value reached: 0.0579591"
+## [1] "iteration number 11 precision reached: 0.0015252 value reached: 0.0547269"
+## [1] "iteration number 12 precision reached: 0.0013672 value reached: 0.0518389"
+## [1] "iteration number 13 precision reached: 0.0012326 value reached: 0.0492427"
+## [1] "iteration number 14 precision reached: 0.001117 value reached: 0.046896"
+## [1] "iteration number 15 precision reached: 0.001017 value reached: 0.0447644"
+## [1] "iteration number 16 precision reached: 0.00093 value reached: 0.0428193"
+## [1] "iteration number 17 precision reached: 0.0008537 value reached: 0.0410373"
+## [1] "iteration number 18 precision reached: 0.0007864 value reached: 0.0393987"
+## [1] "iteration number 19 precision reached: 0.0007268 value reached: 0.0378866"
+## [1] "iteration number 20 precision reached: 0.0006738 value reached: 0.0364869"
+## [1] "iteration number 21 precision reached: 0.0006264 value reached: 0.0351876"
+## [1] "iteration number 22 precision reached: 0.0005838 value reached: 0.0339781"
+## [1] "iteration number 23 precision reached: 0.0005455 value reached: 0.0328494"
+## [1] "iteration number 24 precision reached: 0.0005108 value reached: 0.0317936"
+## [1] "iteration number 25 precision reached: 0.0004794 value reached: 0.030804"
+## [1] "iteration number 26 precision reached: 0.0004507 value reached: 0.0298744"
+## [1] "iteration number 27 precision reached: 0.0004246 value reached: 0.0289995"
+## [1] "iteration number 28 precision reached: 0.0004007 value reached: 0.0281746"
+## [1] "iteration number 29 precision reached: 0.0003787 value reached: 0.0273955"
+## [1] "iteration number 30 precision reached: 0.0003585 value reached: 0.0266586"
+## [1] "iteration number 31 precision reached: 0.0003399 value reached: 0.0259604"
+## [1] "iteration number 32 precision reached: 0.0003227 value reached: 0.025298"
+## [1] "iteration number 33 precision reached: 0.0003068 value reached: 0.0246687"
+## [1] "iteration number 34 precision reached: 0.000292 value reached: 0.0240701"
+## [1] "iteration number 35 precision reached: 0.0002783 value reached: 0.0234999"
+## [1] "iteration number 36 precision reached: 0.0002655 value reached: 0.0229563"
+## [1] "iteration number 37 precision reached: 0.0002536 value reached: 0.0224373"
+## [1] "iteration number 38 precision reached: 0.0002425 value reached: 0.0219413"
+## [1] "iteration number 39 precision reached: 0.0002321 value reached: 0.0214669"
+## [1] "iteration number 40 precision reached: 0.0002223 value reached: 0.0210126"
+## [1] "iteration number 41 precision reached: 0.0002132 value reached: 0.0205772"
+## [1] "iteration number 42 precision reached: 0.0002046 value reached: 0.0201595"
+## [1] "iteration number 43 precision reached: 0.0001965 value reached: 0.0197585"
+## [1] "iteration number 44 precision reached: 0.0001889 value reached: 0.0193732"
+## [1] "iteration number 45 precision reached: 0.0001817 value reached: 0.0190027"
+## [1] "iteration number 46 precision reached: 0.0001749 value reached: 0.0186462"
+## [1] "iteration number 47 precision reached: 0.0001685 value reached: 0.0183028"
+## [1] "iteration number 48 precision reached: 0.0001625 value reached: 0.0179719"
+## [1] "iteration number 49 precision reached: 0.0001567 value reached: 0.0176527"
+## [1] "iteration number 50 precision reached: 0.0001513 value reached: 0.0173447"
+## [1] "iteration number 51 precision reached: 0.0001461 value reached: 0.0170474"
+## [1] "iteration number 52 precision reached: 0.0001412 value reached: 0.01676"
+## [1] "iteration number 53 precision reached: 0.0001366 value reached: 0.0164822"
+## [1] "iteration number 54 precision reached: 0.0001322 value reached: 0.0162135"
+## [1] "iteration number 55 precision reached: 0.0001279 value reached: 0.0159535"
+## [1] "iteration number 56 precision reached: 0.0001239 value reached: 0.0157017"
+## [1] "iteration number 57 precision reached: 0.0001201 value reached: 0.0154577"
+## [1] "iteration number 58 precision reached: 0.0001164 value reached: 0.0152212"
+## [1] "iteration number 59 precision reached: 0.0001129 value reached: 0.0149919"
+## [1] "iteration number 60 precision reached: 0.0001096 value reached: 0.0147693"
+## [1] "iteration number 61 precision reached: 0.0001064 value reached: 0.0145533"
+## [1] "iteration number 62 precision reached: 0.0001034 value reached: 0.0143436"
+## [1] "iteration number 63 precision reached: 0.0001004 value reached: 0.0141398"
+\end{verbatim}
+
+We require only 63 iterations, exactly half of those required in the
+previous method
+
+\hypertarget{ex.-3-iii}{%
+\subsubsection{Ex. 3-iii}\label{ex.-3-iii}}
+
+The reason that the second method works better is because \(f(x)\) has
+the first derivative also obtaining the value of 0 at point 0
+(\(f'(0)=0\)), it is better to multiply by the order of the first
+derivative that does not recieve the value of 0. Because
+\(f''(0)=e^0=1\ne0\) then multiplying the numerator by 2 will achieve
+faster convergence.
+
+\hypertarget{ex.-4}{%
+\subsection{Ex. 4}\label{ex.-4}}
+
+We have \[
+f(x) = arctan(x) \Rightarrow f'(x) = \frac{1}{1+x^2}
+\] Therefore using the Newton method we obtain: \[
+X_{n+1} = X_n - \frac{f(X_n)}{f'(X_n)}= X_n - \frac{arctan(X_n)}{\frac{1}{1+X_n^2}} = X_n- (1+X_n^2)arctan(X_n) 
+\] For convergence to 0 we require \(|X_{n+1}|<|X_{n}|\) and thus we
+require that \[
+X_n- (1+X_n^2)arctan(X_n) > -X_n\Longrightarrow (1+X_n^2)arctan(X_n) > 2X_n \Longrightarrow |arctan(X_n)| > |\frac{2X_n}{1+X_n^2}|
+\] We can thus see that for the domain of \[
+-1.39<X_n<1.39
+\] Where \(X\ne0\) there will be a convergence. For example, we check
+for \(x=1.35\) and obtain the following results:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{atan}\NormalTok{(x))}
+\NormalTok{\}}
+\NormalTok{precision }\OtherTok{\textless{}{-}} \DecValTok{10}\SpecialCharTok{\^{}{-}}\DecValTok{6}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FloatTok{1.35}
+\NormalTok{i }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\ControlFlowTok{while}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)) }\SpecialCharTok{\textgreater{}}\NormalTok{ precision)\{}
+\NormalTok{  i }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{+}\DecValTok{1}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"iteration number"}\NormalTok{, i, }\StringTok{"precision reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{f}\NormalTok{(x)),}\DecValTok{7}\NormalTok{), }\StringTok{"value reached:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(x,}\DecValTok{7}\NormalTok{)))}
+  
+
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ x }\SpecialCharTok{{-}}\NormalTok{ ((x}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{*}\FunctionTok{f}\NormalTok{(x)) }\SpecialCharTok{{-}} \FunctionTok{f}\NormalTok{(x)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "iteration number 1 precision reached: 0.9332475 value reached: 1.35"
+## [1] "iteration number 2 precision reached: 0.9091409 value reached: -1.2840911"
+## [1] "iteration number 3 precision reached: 0.8437668 value reached: 1.1241231"
+## [1] "iteration number 4 precision reached: 0.6660667 value reached: -0.7858719"
+## [1] "iteration number 5 precision reached: 0.2836903 value reached: 0.291554"
+## [1] "iteration number 6 precision reached: 0.0162496 value reached: -0.016251"
+## [1] "iteration number 7 precision reached: 2.9e-06 value reached: 2.9e-06"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{5}\NormalTok{,}\DecValTok{5}\NormalTok{,}\FloatTok{0.01}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(t, }\FunctionTok{abs}\NormalTok{(}\FunctionTok{atan}\NormalTok{(t)), }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{xlab =} \StringTok{""}\NormalTok{, }\AttributeTok{ylab =} \StringTok{""}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(t, }\FunctionTok{abs}\NormalTok{(((}\DecValTok{2}\SpecialCharTok{*}\NormalTok{t)}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\SpecialCharTok{+}\NormalTok{(t}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)))), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{1.39}\NormalTok{,}\FloatTok{1.39}\NormalTok{), }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"green"}\NormalTok{, }\StringTok{"green"}\NormalTok{))}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }\FunctionTok{c}\NormalTok{(}\StringTok{"|atan|"}\NormalTok{, }\StringTok{"|2x/1+x\^{}2|"}\NormalTok{, }\StringTok{"convergence zone"}\NormalTok{), }\AttributeTok{fill =} \FunctionTok{c}\NormalTok{(}\StringTok{"red"}\NormalTok{, }\StringTok{"blue"}\NormalTok{, }\StringTok{"green"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ex1_files/figure-latex/ex4-1.pdf}
+
+\end{document}
